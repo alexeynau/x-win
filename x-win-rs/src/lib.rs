@@ -77,7 +77,7 @@ pub fn get_browser_url(window_info: &WindowInfo) -> Result<String, XWinError> {
  */
 pub fn get_active_window() -> Result<WindowInfo, XWinError> {
   let api = init_platform_api();
-  Ok(api.get_active_window())
+  api.get_active_window().map_err(|_| XWinError)
 }
 
 /**
@@ -86,7 +86,7 @@ pub fn get_active_window() -> Result<WindowInfo, XWinError> {
  */
 pub fn get_open_windows() -> Result<Vec<WindowInfo>, XWinError> {
   let api = init_platform_api();
-  Ok(api.get_open_windows())
+  api.get_open_windows().map_err(|_| XWinError)
 }
 
 /**

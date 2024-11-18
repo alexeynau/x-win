@@ -24,7 +24,7 @@ pub struct X11Api {}
  * Impl. for windows system
  */
 impl Api for X11Api {
-  fn get_active_window(&self) -> WindowInfo {
+  fn get_active_window(&self) -> std::io::Result<WindowInfo> {
     let conn = connection();
     let setup = conn.get_setup();
 
@@ -47,16 +47,16 @@ impl Api for X11Api {
           let active_window: Option<&x::Window> = active_window.value::<x::Window>().first();
           if active_window.is_some() {
             let active_window: &x::Window = active_window.unwrap();
-            result = get_window_information(&conn, active_window);
+            result = get_window_information(&conn, active_window)?;
           }
         }
       }
     }
 
-    result
+    Ok(result)
   }
 
-  fn get_open_windows(&self) -> Vec<WindowInfo> {
+  fn get_open_windows(&self) -> std::io::Result<Vec<WindowInfo>> {
     let mut results: Vec<WindowInfo> = Vec::new();
 
     let conn = connection();
@@ -81,7 +81,7 @@ impl Api for X11Api {
           if window_list.len().ne(&0) {
             for window in window_list {
               let window: &x::Window = &window;
-              let result = get_window_information(&conn, window);
+              let result = get_window_information(&conn, window)?;
               if result.id.ne(&0) && is_normal_window(&conn, *window) {
                 results.push(result);
               }
@@ -90,7 +90,7 @@ impl Api for X11Api {
         }
       }
     }
-    results
+    Ok(results)
   }
 
   fn get_app_icon(&self, window_info: &WindowInfo) -> IconInfo {
@@ -165,12 +165,12 @@ fn connection() -> Connection {
 /**
  * Get window information
  */
-fn get_window_information(conn: &xcb::Connection, window: &x::Window) -> WindowInfo {
+fn get_window_information(conn: &xcb::Connection, window: &x::Window) -> std::io::Result<WindowInfo> {
   let window_pid: u32 = get_window_pid(conn, *window);
   let mut window_info: WindowInfo = init_entity();
 
   if window_pid != 0 {
-    let (path, exec_name) = get_window_path_name(window_pid);
+    let (path, exec_name) = get_window_path_name(window_pid)?;
     window_info.id = window.resource_id();
     window_info.title = get_window_title(conn, *window);
     window_info.info.process_id = window_pid;
@@ -178,9 +178,9 @@ fn get_window_information(conn: &xcb::Connection, window: &x::Window) -> WindowI
     window_info.info.exec_name = exec_name;
     window_info.info.name = get_window_class_name(conn, *window);
     window_info.usage.memory = get_window_memory_usage(window_pid);
-    window_info.position = get_window_position(conn, *window);
+    window_info.position = get_window_position(conn, *window);     
   }
-  window_info
+  Ok(window_info)
 }
 
 /**

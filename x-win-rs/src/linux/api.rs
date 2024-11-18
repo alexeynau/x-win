@@ -29,7 +29,7 @@ pub struct LinuxAPI {}
  * Impl. for windows system
  */
 impl Api for LinuxAPI {
-  fn get_active_window(&self) -> WindowInfo {
+  fn get_active_window(&self) -> Result<WindowInfo, std::io::Error> {
     if is_wayland_desktop() {
       (WaylandApi {}).get_active_window()
     } else {
@@ -37,7 +37,7 @@ impl Api for LinuxAPI {
     }
   }
 
-  fn get_open_windows(&self) -> Vec<WindowInfo> {
+  fn get_open_windows(&self) -> Result<Vec<WindowInfo>, std::io::Error> {
     if is_wayland_desktop() {
       (WaylandApi {}).get_open_windows()
     } else {

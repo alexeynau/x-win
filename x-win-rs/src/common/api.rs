@@ -9,12 +9,12 @@ pub trait Api {
   /**
    * Return information of current active Window
    */
-  fn get_active_window(&self) -> WindowInfo;
+  fn get_active_window(&self) -> std::io::Result<WindowInfo>;
 
   /**
    * Return Array of open windows information
    */
-  fn get_open_windows(&self) -> Vec<WindowInfo>;
+  fn get_open_windows(&self) -> std::io::Result<Vec<WindowInfo>>;
 
   /**
    * Return a base64 icon from window_info.info.path

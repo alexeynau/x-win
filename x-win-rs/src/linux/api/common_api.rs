@@ -39,12 +39,12 @@ pub fn get_window_memory_usage(pid: u32) -> u32 {
 /**
  * Recover path and name of application from proc
  */
-pub fn get_window_path_name(pid: u32) -> (String, String) {
+pub fn get_window_path_name(pid: u32) -> std::io::Result<(String, String)> {
   let executable_path = read_link(format!("/proc/{}/exe", pid)).unwrap();
   let path = executable_path.display().to_string();
   let name = executable_path.file_name().unwrap();
   let name = name.to_string_lossy().to_string();
-  (path, name)
+  Ok((path, name))
 }
 
 pub fn init_entity() -> WindowInfo {

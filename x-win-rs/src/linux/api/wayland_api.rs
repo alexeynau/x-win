@@ -38,7 +38,7 @@ pub struct WaylandApi {}
  * Impl. for Linux system
  */
 impl Api for WaylandApi {
-  fn get_active_window(&self) -> WindowInfo {
+  fn get_active_window(&self) -> Result<WindowInfo, std::io::Error> {
     if gnome_use_eval() {
       wayland_eval_api::get_active_window()
     } else {
@@ -46,7 +46,7 @@ impl Api for WaylandApi {
     }
   }
 
-  fn get_open_windows(&self) -> Vec<WindowInfo> {
+  fn get_open_windows(&self) -> Result<Vec<WindowInfo>, std::io::Error> {
     if gnome_use_eval() {
       wayland_eval_api::get_open_windows()
     } else {

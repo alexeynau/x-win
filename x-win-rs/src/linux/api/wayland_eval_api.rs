@@ -10,7 +10,7 @@ use super::{
   gnome_shell::{value_to_icon_info, value_to_window_info, GNOME_XWIN_GET_ICON_SCRIPT},
 };
 
-pub fn get_active_window() -> WindowInfo {
+pub fn get_active_window() -> std::io::Result<WindowInfo> {
   let script = format!(
     r#"
 {}
@@ -24,14 +24,14 @@ get_active_window();
   if response.ne(&"") {
     let response: serde_json::Value = serde_json::from_str(response.as_str()).unwrap();
     if response.is_object() {
-      return value_to_window_info(&response);
+      return Ok(value_to_window_info(&response));
     }
   }
 
-  init_entity()
+  Ok(init_entity())
 }
 
-pub fn get_open_windows() -> Vec<WindowInfo> {
+pub fn get_open_windows() -> std::io::Result<Vec<WindowInfo>> {
   let script = format!(
     r#"
 {}
@@ -46,16 +46,16 @@ get_open_windows();
     let response: serde_json::Value = serde_json::from_str(response.as_str()).unwrap();
 
     if response.is_array() {
-      return response
+      return Ok(response
         .as_array()
         .unwrap()
         .iter()
         .map(value_to_window_info)
-        .collect();
+        .collect());
     }
   }
 
-  vec![]
+  Ok(vec![])
 }
 
 fn call_script(script: &String) -> String {
