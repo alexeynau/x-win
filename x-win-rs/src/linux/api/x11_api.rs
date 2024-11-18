@@ -81,9 +81,13 @@ impl Api for X11Api {
           if window_list.len().ne(&0) {
             for window in window_list {
               let window: &x::Window = &window;
-              let result = get_window_information(&conn, window)?;
-              if result.id.ne(&0) && is_normal_window(&conn, *window) {
-                results.push(result);
+              match get_window_information(&conn, window) {
+                Ok(window_info) => {
+                  if window_info.id.ne(&0) && is_normal_window(&conn, *window) {
+                    results.push(window_info);
+                  }
+                }
+                Err(_) => {}
               }
             }
           }
