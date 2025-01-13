@@ -41,18 +41,18 @@ pub struct MacosAPI {}
  * Impl. for Darwin system
  */
 impl Api for MacosAPI {
-  fn get_active_window(&self) -> WindowInfo {
+  fn get_active_window(&self) -> Result<WindowInfo, std::io::Error> {
     let windows: Vec<WindowInfo> = get_windows_informations(true);
     if !windows.is_empty() {
       let t: &WindowInfo = windows.first().unwrap();
-      t.clone() as WindowInfo
+      Ok(t.clone() as WindowInfo)
     } else {
-      empty_entity()
+      Ok(empty_entity())
     }
   }
 
-  fn get_open_windows(&self) -> Vec<WindowInfo> {
-    get_windows_informations(false)
+  fn get_open_windows(&self) -> Result<Vec<WindowInfo>, std::io::Error> {
+    Ok(get_windows_informations(false))
   }
 
   fn get_app_icon(&self, window_info: &WindowInfo) -> IconInfo {
